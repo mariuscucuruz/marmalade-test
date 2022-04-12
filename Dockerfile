@@ -75,22 +75,15 @@ RUN pecl install memcached && \
 
 RUN apk del build-dependencies
 
-## Create system user to run Composer and Artisan Commands
-RUN useradd -G www-data,root -u $uid -d /home/$user $user
-RUN mkdir -p /home/$user/.composer && \
-    chown -R $user:$user /home/$user
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 USER $user
-
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html/marmalade
 #COPY . /var/www/html/marmalade
 COPY .env /var/www/html/marmalade/.env
 COPY composer.json /var/www/html/marmalade/composer.json
-
-RUN composer install --ignore-platform-reqs
-RUN composer dump-autoload
+COPY composer.lock /var/www/html/marmalade/composer.lock
 
 EXPOSE 9000
 
