@@ -27,6 +27,8 @@ services:
       context: .
       dockerfile: Dockerfile
     working_dir: /var/www/html/marmalade
+    container_name: marmalade-laravel
+    restart: unless-stopped
     networks:
       - default
     expose:
@@ -35,6 +37,7 @@ services:
       - ${HOME}/.ssh/id_rsa:/root/.ssh/id_rsa
       - ./:/var/www/html/marmalade:cached
     depends_on:
+      - db
       - cache
 
 networks:
