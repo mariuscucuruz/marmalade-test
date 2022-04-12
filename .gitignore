@@ -1,6 +1,11 @@
 /vendor
+/node_modules
 /.idea
+clover.xml
 Homestead.json
 Homestead.yaml
 .env
+.env.backup
 .phpunit.result.cache
+coverage.xml
+test-coverage/
