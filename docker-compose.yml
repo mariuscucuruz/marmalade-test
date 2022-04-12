@@ -1,0 +1,41 @@
+version: "3.7"
+
+services:
+  db:
+    image: mysql:5.7.30
+    command: mysqld --performance_schema=on --show_compatibility_56=on
+    restart: unless-stopped
+    ports:
+      - "3320:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_ROOTPASSWORD}"
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+    networks:
+      - default
+    volumes:
+      - db:/var/lib/mysql
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /var/www/html/marmalade
+    networks:
+      - default
+    expose:
+      - 9000
+    volumes:
+      - ${HOME}/.ssh/id_rsa:/root/.ssh/id_rsa
+      - ./:/var/www/html/marmalade:cached
+    depends_on:
+      - cache
+      - logstash
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  db: {}
