@@ -2,7 +2,11 @@
 
 namespace Tests\Acceptance;
 
+use App\Exceptions\AgeInvalidException;
+use App\Exceptions\PostcodeInvalidException;
+use App\Exceptions\RegInvalidException;
 use Illuminate\Http\Response;
+use InvalidArgumentException;
 use TestCase;
 
 class AcceptanceTest extends TestCase
@@ -53,18 +57,13 @@ class AcceptanceTest extends TestCase
     public function api_endpoint_responds_to_post_requests_test()
     {
         // given
-        $requestPayload = $this->makeValidPostRequestPayload();
+        $requestPayload = [];
 
         // when
         $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);
 
         // then
-        $expected = json_encode([
-            'abi_code' => $this->app->version(),
-        ], JSON_THROW_ON_ERROR);
-
-        self::assertEquals(Response::HTTP_OK, $requestResponse->status());
-        self::assertEquals($expected, $requestResponse->getContent());
+        self::assertInstanceOf(InvalidArgumentException::class, $requestResponse->exception);
     }
 
     /**
@@ -76,27 +75,53 @@ class AcceptanceTest extends TestCase
      *   "regNo": "PJ63 LXR"
      * }
      * make a call to API to look up the vehicle registration number and return an ABI code.
-     * @throws \JsonException
      */
-    public function api_endpoint_responds_to_post_requests_test()
+    public function api_endpoint_expects_age_as_intiger_in_post_requests_test()
     {
         // given
         $requestPayload = [
-            'age'       => 20,
-            'postcode' => "PE3 8AF",
-            'regNo'    => "PJ63 LXR"
+            '20.1', 'PE3 8AF', 'GN66PJO'
         ];
 
         // when
         $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);
 
         // then
-        $expected = json_encode([
-            'abi_code' => $this->app->version(),
-        ], JSON_THROW_ON_ERROR);
+        self::assertInstanceOf(AgeInvalidException::class, $requestResponse->exception);
+    }
 
-        self::assertEquals(Response::HTTP_OK, $requestResponse->status());
-        self::assertEquals($expected, $requestResponse->getContent());
+    /**
+     * @test
+     */
+    public function api_endpoint_expects_postcode_as_string_in_post_requests_test()
+    {
+        // given
+        $requestPayload = [
+            20, 666999, 'GN66PJO'
+        ];
+
+        // when
+        $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);
+
+        // then
+        self::assertInstanceOf(PostcodeInvalidException::class, $requestResponse->exception);
+    }
+
+    /**
+     * @test
+     */
+    public function api_endpoint_expects_reg_as_string_in_post_requests_test()
+    {
+        // given
+        $requestPayload = [
+            20, 666999, 'GN66PJO'
+        ];
+
+        // when
+        $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);
+
+        // then
+        self::assertInstanceOf(RegInvalidException::class, $requestResponse->exception);
     }
 
     /**
@@ -109,9 +134,9 @@ class AcceptanceTest extends TestCase
     private function makeValidPostRequestPayload(int $age = 20, string $postcode = 'PE3 8AF', string $regNo = 'PJ63 LXR'): array
     {
         return [
-            'age'      => $age,
-            'postcode' => $postcode,
-            'regNo'    => $regNo
+            'age'           => $age,
+            'postcode'      => $postcode,
+            'registration'  => $regNo
         ];
     }
 }
