@@ -2,21 +2,18 @@
 
 namespace App\Http\Services;
 
-use Faker\Generator;
+use Faker\Factory;
 
 class RegistrationService implements ApiPluginInterface
 {
-    /**
-     * @var \Faker\Generator
-     */
-    private Generator $faker;
+    private \Faker\Generator $faker;
 
     /**
-     * @param \Faker\Generator $generator
+     *
      */
-    public function __construct(Generator $generator)
+    public function __construct()
     {
-        $this->faker = $generator;
+        $this->faker = Factory::create();
     }
 
     /**
@@ -27,7 +24,7 @@ class RegistrationService implements ApiPluginInterface
     public function resolve(array $payload): array
     {
         return [
-            'abi_code' => $this->faker->uuid()
+            'abi_code' => $this->faker->uuid
         ];
     }
 }

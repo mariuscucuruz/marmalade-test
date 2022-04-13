@@ -5,32 +5,32 @@ namespace App\Http\Controllers;
 use App\Exceptions\AgeInvalidException;
 use App\Exceptions\PostcodeInvalidException;
 use App\Exceptions\RegInvalidException;
-use App\Http\Services\ApiPluginInterface;
+use App\Http\Services\RegistrationService;
 use Illuminate\Http\JsonResponse;
-use Laravel\Lumen\Http\Request;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class MarmaladeController extends Controller
 {
     /**
-     * @var \App\Http\Services\ApiPluginInterface
+     * @var \App\Http\Services\RegistrationService
      */
-    private ApiPluginInterface $service;
+    private RegistrationService $service;
 
     /**
-     * @param \App\Http\Services\ApiPluginInterface $regService
+     * @param \App\Http\Services\RegistrationService $regService
      */
-    public function __construct(ApiPluginInterface $regService)
+    public function __construct(RegistrationService $regService)
     {
         $this->service = $regService;
     }
 
     /**
-     * @param \Laravel\Lumen\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      *
-     * @return string
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function resolveRegistrationFromRequest(Request $request)
+    public function resolveRegistrationFromRequest(Request $request): JsonResponse
     {
         $requestPayload = $request->only([
             'age',
@@ -43,6 +43,23 @@ class MarmaladeController extends Controller
         $response = $this->service->resolve($payload);
 
         return $this->formatApiResponse($response);
+    }
+
+    /**
+     * Consistent, unified formatter for all responses.
+     *
+     * @param array $response
+     * @param int   $status
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function formatApiResponse(array $response = [], int $status = Response::HTTP_OK): JsonResponse
+    {
+        if (!isset($response['abi_code'])) {
+            return response()->json([], Response::HTTP_NO_CONTENT);
+        }
+
+        return response()->json($response, $status);
     }
 
     /**
@@ -78,14 +95,14 @@ class MarmaladeController extends Controller
     /**
      * Rudimentary string validation.
      *
-     * @param $value
+     * @param null $value
      *
-     * @return int
+     * @return int|null
      */
-    protected function parseInteger($value = null): int
+    protected function parseInteger($value = null): ?int
     {
         if (!isset($value) || !is_int($value)) {
-            throw new AgeInvalidException();
+            return null;
         }
 
         return (int) $value;
@@ -94,33 +111,16 @@ class MarmaladeController extends Controller
     /**
      * Rudimentary string validation.
      *
-     * @param $value
+     * @param null $value
      *
-     * @return string
+     * @return string|null
      */
-    protected function parseString($value = null): string
+    protected function parseString($value = null): ?string
     {
         if (!isset($value) || !is_string($value)) {
-            throw new PostcodeInvalidException();
+            return null;
         }
 
         return str($value);
-    }
-
-    /**
-     * Consistent formatter for all responses.
-     *
-     * @param array $response
-     * @param int   $status
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function formatApiResponse(array $response = [], int $status = Response::HTTP_OK): JsonResponse
-    {
-        if (!isset($response['abi_code'])) {
-            return response()->json(null, Response::HTTP_NO_CONTENT);
-        }
-
-        return response()->json($response, $response);
     }
 }
