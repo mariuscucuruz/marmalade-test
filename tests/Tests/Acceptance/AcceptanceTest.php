@@ -98,9 +98,7 @@ class AcceptanceTest extends TestCase
     public function api_endpoint_expects_postcode_as_string_in_post_requests_test()
     {
         // given
-        $requestPayload = [
-            20, 666999, 'GN66PJO'
-        ];
+        $requestPayload = $this->makeValidPostRequestPayload(20, 666, 'GN66PJO');
 
         // when
         $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);
@@ -114,12 +112,8 @@ class AcceptanceTest extends TestCase
      */
     public function api_endpoint_expects_reg_as_string_in_post_requests_test()
     {
-        $age      = 20;
-        $postcode = 666;
-        $regNo    = 'GN66PJO';
-
         // given
-        $requestPayload = [$age, $postcode, $regNo];
+        $requestPayload = $this->makeValidPostRequestPayload()
 
         // when
         $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);

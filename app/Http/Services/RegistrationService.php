@@ -2,19 +2,16 @@
 
 namespace App\Http\Services;
 
-use Faker\Factory;
+use App\Exceptions\ApiResponseException;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Http;
 
 class RegistrationService implements ApiPluginInterface
 {
-    private \Faker\Generator $faker;
-
     /**
-     *
+     * @var string
      */
-    public function __construct()
-    {
-        $this->faker = Factory::create();
-    }
+    public const OTHER_API_URL = 'https://other.api/';
 
     /**
      * @param array $payload
@@ -23,8 +20,24 @@ class RegistrationService implements ApiPluginInterface
      */
     public function resolve(array $payload): array
     {
-        return [
-            'abi_code' => $this->faker->uuid
-        ];
+        $this->makeApiRequest($payload);
+    }
+
+    /**
+     * @param array $array
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function makeApiRequest(array $array = []): Response
+    {
+        try {
+            $request  = Http::acceptJson()->post(self::OTHER_API_URL, $array);
+            $response = $request->json();
+
+            return $response['abi_code'];
+        }
+        catch (\Exception $exception) {
+            throw new ApiResponseException($exception->getMessage());
+        }
     }
 }
