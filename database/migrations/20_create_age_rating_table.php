@@ -2,7 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+    use Illuminate\Support\Facades\Artisan;
+    use Illuminate\Support\Facades\Schema;
 
 class createAgeRatingTable extends Migration
 {
@@ -22,7 +23,7 @@ class createAgeRatingTable extends Migration
             $table->timestamps();
         });
 
-        #Artisan::call('db:seed', ['--class' => 'AgeRatingTableSeeder']);
+        Artisan::call('db:seed', ['--class' => 'AgeRatingTableSeeder']);
     }
 
     /**
