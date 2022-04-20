@@ -2,11 +2,9 @@
 
 namespace App\Http\Services;
 
-use App\Exceptions\ApiResponseException;
 use App\Repositories\AbiCodeFactorRepository;
 use App\Repositories\AgeFactorRepository;
 use App\Repositories\PostcodeFactorRepository;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
 
 class RegistrationService implements ApiPluginInterface
@@ -48,6 +46,7 @@ class RegistrationService implements ApiPluginInterface
         $this->abiCodeFactorRepository  = $abiCodeFactorRepository;
         $this->postcodeFactorRepository = $postcodeFactorRepository;
     }
+
     /**
      * @param array $payload
      *
@@ -125,12 +124,12 @@ class RegistrationService implements ApiPluginInterface
      * @param array $array
      *
      * @return array
-     *
-     * @throws \HttpException
      */
     protected function getFactorsFromApi(array $array = []): array
     {
         $request  = Http::acceptJson()->post(self::OTHER_API_URL, $array);
+
+        /** @var array $response */
         $response = $request->json();
 
         return $response;
