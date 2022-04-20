@@ -11,5 +11,5 @@ interface ApiPluginInterface
      *
      * @throws \Exception
      */
-    public function resolve(array $payload): array;
+    public function resolvePremium(array $payload): array;
 }

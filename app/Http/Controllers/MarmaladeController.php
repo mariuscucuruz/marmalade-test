@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\AgeInvalidException;
+use App\Exceptions\ApiResponseException;
 use App\Exceptions\PostcodeInvalidException;
 use App\Exceptions\RegInvalidException;
 use App\Http\Services\RegistrationService;
+use http\Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,9 +42,15 @@ class MarmaladeController extends Controller
 
         $payload = $this->validatePayload($requestPayload);
 
-        $response = $this->service->resolve($payload);
+        try {
+            $premiums = $this->service->resolvePremium($payload);
+        } catch (\Exception $exception) {
+            throw new ApiResponseException($exception->getMessage());
+        }
 
-        return $this->formatApiResponse($response);
+        $totalPremium = array_sum($premiums);
+
+        return $this->formatApiResponse($totalPremium);
     }
 
     /**
