@@ -78,10 +78,12 @@ class AcceptanceTest extends TestCase
      */
     public function api_endpoint_expects_age_as_intiger_in_post_requests_test()
     {
+        $age      = 20.1;
+        $postcode = 'PE3 8AF';
+        $regNo    = 'GN 66 PJO';
+
         // given
-        $requestPayload = [
-            '20.1', 'PE3 8AF', 'GN66PJO'
-        ];
+        $requestPayload = [$age, $postcode, $regNo];
 
         // when
         $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);
@@ -112,10 +114,12 @@ class AcceptanceTest extends TestCase
      */
     public function api_endpoint_expects_reg_as_string_in_post_requests_test()
     {
+        $age      = 20;
+        $postcode = 666;
+        $regNo    = 'GN66PJO';
+
         // given
-        $requestPayload = [
-            20, 666999, 'GN66PJO'
-        ];
+        $requestPayload = [$age, $postcode, $regNo];
 
         // when
         $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);
