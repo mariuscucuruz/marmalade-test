@@ -48,7 +48,9 @@ class MarmaladeController extends Controller
             throw new ApiResponseException($exception->getMessage());
         }
 
-        $totalPremium = array_sum($premiums);
+        $totalPremium = [
+            'total_premium' => array_sum($premiums)
+        ];
 
         return $this->formatApiResponse($totalPremium);
     }
@@ -61,9 +63,9 @@ class MarmaladeController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function formatApiResponse(array $response = [], int $status = Response::HTTP_OK): JsonResponse
+    protected function formatApiResponse($response, int $status = Response::HTTP_OK): JsonResponse
     {
-        if (!isset($response['abi_code'])) {
+        if (!$response) {
             return response()->json([], Response::HTTP_NO_CONTENT);
         }
 
