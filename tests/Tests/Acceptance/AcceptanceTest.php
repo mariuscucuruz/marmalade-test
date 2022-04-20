@@ -113,7 +113,7 @@ class AcceptanceTest extends TestCase
     public function api_endpoint_expects_reg_as_string_in_post_requests_test()
     {
         // given
-        $requestPayload = $this->makeValidPostRequestPayload()
+        $requestPayload = $this->makeValidPostRequestPayload();
 
         // when
         $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);
