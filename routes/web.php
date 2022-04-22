@@ -16,3 +16,12 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+
+$router->group(['prefix' => 'marmalade/'], function () use ($router) {
+    $router->get('/', function () use ($router) {
+        return $router->app->version();
+    });
+
+    $router->post('/', 'MarmaladeController@resolvePremiumFromRequest');
+});
