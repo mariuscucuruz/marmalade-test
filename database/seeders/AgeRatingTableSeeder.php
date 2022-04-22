@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use createAgeRatingTable;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -52,6 +51,6 @@ class AgeRatingTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table(createAgeRatingTable::TABLE_NAME)->insert($this->data);
+        DB::table('age_rating')->insert($this->data);
     }
 }

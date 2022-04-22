@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use createPostcodeRatingTable;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +33,6 @@ class PostcodeRatingTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table(createPostcodeRatingTable::TABLE_NAME)->insert($this->data);
+        DB::table('postcode_rating')->insert($this->data);
     }
 }

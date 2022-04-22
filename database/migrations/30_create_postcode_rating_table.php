@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 
-class createPostcodeRatingTable extends Migration
+return new class extends Migration
 {
     public const TABLE_NAME = 'postcode_rating';
 
@@ -35,4 +35,4 @@ class createPostcodeRatingTable extends Migration
     {
         Schema::dropIfExists(self::TABLE_NAME);
     }
-}
+};

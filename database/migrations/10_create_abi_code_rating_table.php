@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 
-class createAbiCodeRatingTable extends Migration
+return new class extends Migration
 {
     public const TABLE_NAME = 'abi_code_rating';
 
@@ -35,4 +35,4 @@ class createAbiCodeRatingTable extends Migration
     {
         Schema::dropIfExists(self::TABLE_NAME);
     }
-}
+};
