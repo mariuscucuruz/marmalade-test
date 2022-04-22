@@ -23,7 +23,5 @@ $router->group(['prefix' => 'marmalade/'], function () use ($router) {
         return $router->app->version();
     });
 
-    $router->post('/', [
-        'uses' => 'MarmaladeController@resolveRegistrationFromRequest'
-    ]);
+    $router->post('/', 'MarmaladeController@resolvePremiumFromRequest');
 });

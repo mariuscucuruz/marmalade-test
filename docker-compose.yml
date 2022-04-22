@@ -10,6 +10,8 @@ services:
     image: mysql:5.7.30
     command: mysqld --performance_schema=on --show_compatibility_56=on
     restart: unless-stopped
+    links:
+      - api
     ports:
       - "3320:3306"
     environment:
