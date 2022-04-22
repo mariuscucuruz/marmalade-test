@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Exceptions\ApiResponseException;
 use App\Repositories\AbiCodeFactorRepository;
 use App\Repositories\AgeFactorRepository;
 use App\Repositories\PostcodeFactorRepository;
@@ -52,16 +53,9 @@ class RegistrationService implements ApiPluginInterface
      *
      * @return array
      */
-    public function resolvePremium(array $payload): array
+    public function resolvePremiums(array $payload): array
     {
-        try {
-            // attempt to get the rating factors from 3rd party API
-            $factors = $this->getFactorsFromApi($payload);
-        }
-        catch (\Exception $exception) {
-            // get rating factors from local storage
-            $factors = $this->getFactorsFromLocal($payload);
-        }
+        $factors = $this->getFactors($payload);
 
         return array_map(static function (float $factor) {
             if ($factor > 0) {
@@ -75,12 +69,12 @@ class RegistrationService implements ApiPluginInterface
      *
      * @return float[]
      */
-    protected function getFactorsFromLocal(array $payload): array
+    protected function getFactors(array $payload): array
     {
         return [
-            $this->getAgeFactor($payload[0]),
-            $this->getAbiCodeFactor($payload[1]),
-            $this->getPostcodeFactor($payload[2]),
+            $this->getAgeFactor($payload['age']),
+            $this->getAbiCodeFactor($payload['abiCode']),
+            $this->getPostcodeFactor($payload['postcode']),
         ];
     }
 
@@ -121,17 +115,25 @@ class RegistrationService implements ApiPluginInterface
     }
 
     /**
-     * @param array $array
+     * @param string $registration
      *
-     * @return array
+     * @return string
      */
-    protected function getFactorsFromApi(array $array = []): array
+    public function getAbiCodeFromRegNo(string $registration): string
     {
-        $request  = Http::acceptJson()->post(self::OTHER_API_URL, $array);
+        $payload = [
+            'regNo' => $registration,
+        ];
+
+        $request = Http::acceptJson()->post(self::OTHER_API_URL, $payload);
 
         /** @var array $response */
         $response = $request->json();
 
-        return $response;
+        if (!isset($response['abiCode'])) {
+            throw new ApiResponseException();
+        }
+
+        return $response['abiCode'];
     }
 }

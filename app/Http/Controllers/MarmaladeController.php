@@ -7,7 +7,6 @@ use App\Exceptions\ApiResponseException;
 use App\Exceptions\PostcodeInvalidException;
 use App\Exceptions\RegInvalidException;
 use App\Http\Services\RegistrationService;
-use http\Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,23 +31,26 @@ class MarmaladeController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function resolveRegistrationFromRequest(Request $request): JsonResponse
+    public function resolvePremiumFromRequest(Request $request): JsonResponse
     {
         $requestPayload = $request->only([
             'age',
             'postcode',
             'registration'
         ]);
+        #dd($request, $request->all(), $requestPayload);
 
         $payload = $this->validatePayload($requestPayload);
 
         try {
-            $premiums = $this->service->resolvePremium($payload);
-        } catch (\Exception $exception) {
+            $payload['abiCode'] = $this->service->getAbiCodeFromRegNo($payload['registration']);
+
+            // add up all premium values together to get a total
+            $totalPremium = array_sum($this->service->resolvePremiums($payload));
+        }
+        catch (\Exception $exception) {
             throw new ApiResponseException($exception->getMessage());
         }
-
-        $totalPremium = array_sum($premiums);
 
         return $this->formatApiResponse($totalPremium);
     }
@@ -82,7 +84,7 @@ class MarmaladeController extends Controller
     protected function validatePayload(array $array = []): array
     {
         if (1 > count($array)) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(count($array));
         }
 
         if (!$age = $this->parseInteger($array['age'])) {
