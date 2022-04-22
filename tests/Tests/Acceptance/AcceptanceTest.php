@@ -11,7 +11,7 @@ use TestCase;
 
 class AcceptanceTest extends TestCase
 {
-    protected string $routeUrl = 'marmalade/';
+    protected string $routeUrl = '/marmalade/';
 
     /**
      * @test
@@ -60,10 +60,14 @@ class AcceptanceTest extends TestCase
         $requestPayload = [];
 
         // when
-        $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);
+        $requestResponse = $this->post($this->routeUrl, $requestPayload, $this->makeJsonHeaders());
 
         // then
-        self::assertInstanceOf(InvalidArgumentException::class, $requestResponse->exception);
+        $requestResponse
+            ->seeJsonContains([
+                'exception' => \InvalidArgumentException::class
+            ])
+            ->assertResponseStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -78,18 +82,18 @@ class AcceptanceTest extends TestCase
      */
     public function api_endpoint_expects_age_as_intiger_in_post_requests_test()
     {
-        $age      = 20.1;
-        $postcode = 'PE3 8AF';
-        $regNo    = 'GN 66 PJO';
-
         // given
-        $requestPayload = [$age, $postcode, $regNo];
+        $requestPayload = $this->makePostRequestPayload(20.1, 'PE3 8AF', 'GN66PJO');
 
         // when
-        $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);
+        $requestResponse = $this->json('POST', $this->routeUrl, $requestPayload, $this->makeJsonHeaders());
 
         // then
-        self::assertInstanceOf(AgeInvalidException::class, $requestResponse->exception);
+        $requestResponse
+            ->seeJsonContains([
+                'exception' => AgeInvalidException::class
+            ])
+            ->assertResponseStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -98,13 +102,17 @@ class AcceptanceTest extends TestCase
     public function api_endpoint_expects_postcode_as_string_in_post_requests_test()
     {
         // given
-        $requestPayload = $this->makeValidPostRequestPayload(20, 666, 'GN66PJO');
+        $requestPayload = $this->makePostRequestPayload(20, 666, 'GN66PJO');
 
         // when
-        $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);
+        $requestResponse = $this->json('POST', $this->routeUrl, $requestPayload, $this->makeJsonHeaders());
 
         // then
-        self::assertInstanceOf(PostcodeInvalidException::class, $requestResponse->exception);
+        $requestResponse
+            ->seeJsonContains([
+                'exception' => PostcodeInvalidException::class
+            ])
+            ->assertResponseStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -113,13 +121,17 @@ class AcceptanceTest extends TestCase
     public function api_endpoint_expects_reg_as_string_in_post_requests_test()
     {
         // given
-        $requestPayload = $this->makeValidPostRequestPayload();
+        $requestPayload = $this->makePostRequestPayload(20, 'PE3 8AF', 9999);
 
         // when
-        $requestResponse = $this->call('POST', $this->routeUrl, $requestPayload);
+        $requestResponse = $this->json('POST', $this->routeUrl, $requestPayload, $this->makeJsonHeaders());
 
         // then
-        self::assertInstanceOf(RegInvalidException::class, $requestResponse->exception);
+        $requestResponse
+            ->seeJsonContains([
+                'exception' => RegInvalidException::class
+            ])
+            ->assertResponseStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -129,12 +141,23 @@ class AcceptanceTest extends TestCase
      *
      * @return array
      */
-    private function makeValidPostRequestPayload(int $age = 20, string $postcode = 'PE3 8AF', string $regNo = 'PJ63 LXR'): array
+    private function makePostRequestPayload($age = 20, $postcode = 'PE3 8AF', $regNo = 'PJ63 LXR'): array
     {
         return [
             'age'           => $age,
             'postcode'      => $postcode,
             'registration'  => $regNo
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    private function makeJsonHeaders(): array
+    {
+        return [
+            'Content-Type'  =>'application/json',
+            'accept'        => 'application/json',
         ];
     }
 }
