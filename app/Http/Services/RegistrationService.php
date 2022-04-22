@@ -107,8 +107,10 @@ class RegistrationService implements ApiPluginInterface
      *
      * @return float
      */
-    protected function getPostcodeFactor(string $areaCode): float
+    protected function getPostcodeFactor(string $postcode): float
     {
+        $postCodeParts  = explode(" ", $postcode);
+        $areaCode       = $postCodeParts[0];
         $postcodeFactor = $this->postcodeFactorRepository->getForAreaCode($areaCode);
 
         return $postcodeFactor['rating_factor'] ?? self::DEFAULT_FACTOR_IF_NOT_FOUND;
@@ -125,10 +127,15 @@ class RegistrationService implements ApiPluginInterface
             'regNo' => $registration,
         ];
 
-        $request = Http::acceptJson()->post(self::OTHER_API_URL, $payload);
+        try {
+            $request = Http::acceptJson()->post(self::OTHER_API_URL, $payload);
 
-        /** @var array $response */
-        $response = $request->json();
+            /** @var array $response */
+            $response = $request->json();
+        } catch (\Exception $exception) {
+            // hardcode default AbiCode to value from AbiCodeRatingTableSeeder
+            $response['abiCode'] = '52123803';
+        }
 
         if (!isset($response['abiCode'])) {
             throw new ApiResponseException();

@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\AbiCode;
+use App\Models\AbiCodeRating;
 
 class AbiCodeFactorRepository
 {
@@ -14,7 +14,7 @@ class AbiCodeFactorRepository
     public function getForAbiCode(string $abi_code): array
     {
         /** @var \Illuminate\Database\Eloquent\Model $abiFactor */
-        $abiFactor = AbiCode::where('abi_code', $abi_code)->firstOrFail();
+        $abiFactor = AbiCodeRating::where('abi_code', $abi_code)->firstOrFail();
 
         return $abiFactor->toArray();
     }

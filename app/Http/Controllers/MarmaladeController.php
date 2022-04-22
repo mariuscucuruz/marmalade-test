@@ -38,12 +38,12 @@ class MarmaladeController extends Controller
             'postcode',
             'registration'
         ]);
-        #dd($request, $request->all(), $requestPayload);
+        #dd($request->all(), $requestPayload);
 
         $payload = $this->validatePayload($requestPayload);
 
         try {
-            $payload['abiCode'] = $this->service->getAbiCodeFromRegNo($payload['registration']);
+            $payload['abiCode'] = $this->service->getAbiCodeFromRegNo($requestPayload['registration']);
 
             // add up all premium values together to get a total
             $totalPremium = array_sum($this->service->resolvePremiums($payload));
@@ -100,9 +100,9 @@ class MarmaladeController extends Controller
         }
 
         return [
-            $age,
-            $postcode,
-            $registration
+            'age'          => $age,
+            'postcode'     => $postcode,
+            'registration' => $registration
         ];
     }
 

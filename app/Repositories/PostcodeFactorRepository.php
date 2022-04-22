@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Postcode;
+use App\Models\PostcodeRating;
 
 class PostcodeFactorRepository
 {
@@ -14,7 +14,7 @@ class PostcodeFactorRepository
     public function getForAreaCode(string $postcode): array
     {
         /** @var \Illuminate\Database\Eloquent\Model $areaFactor */
-        $areaFactor = Postcode::where('postcode_area', $postcode)->firstOrFail();
+        $areaFactor = PostcodeRating::where('postcode_area', $postcode)->firstOrFail();
 
         return $areaFactor->toArray();
     }

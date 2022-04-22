@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Age;
+use App\Models\AgeRating;
 
 class AgeFactorRepository
 {
@@ -14,7 +14,7 @@ class AgeFactorRepository
     public function getForAge(int $age): array
     {
         /** @var \Illuminate\Database\Eloquent\Model $ageFactor */
-        $ageFactor = Age::where('age', $age)->firstOrFail();
+        $ageFactor = AgeRating::where('age', $age)->firstOrFail();
 
         return $ageFactor->toArray();
     }

@@ -135,13 +135,32 @@ class AcceptanceTest extends TestCase
     }
 
     /**
+     * @test
+     */
+    public function api_returns_premium_when_valid_post_requests_test()
+    {
+        // given
+        $requestPayload = $this->makePostRequestPayload();
+
+        // when
+        $requestResponse = $this->json('POST', $this->routeUrl, $requestPayload, $this->makeJsonHeaders());
+
+        // then
+        $requestResponse
+            ->seeJson([
+                'total_premium' => 1750.0
+            ])
+            ->assertResponseStatus(Response::HTTP_OK);
+    }
+
+    /**
      * @param int    $age
      * @param string $postcode
      * @param string $regNo
      *
      * @return array
      */
-    private function makePostRequestPayload($age = 20, $postcode = 'PE3 8AF', $regNo = 'PJ63 LXR'): array
+    private function makePostRequestPayload($age = 20, $postcode = 'PE3 8AF', $regNo = 'LE10 LXR'): array
     {
         return [
             'age'           => $age,
