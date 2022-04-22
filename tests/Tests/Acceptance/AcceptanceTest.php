@@ -6,11 +6,13 @@ use App\Exceptions\AgeInvalidException;
 use App\Exceptions\PostcodeInvalidException;
 use App\Exceptions\RegInvalidException;
 use Illuminate\Http\Response;
-use InvalidArgumentException;
+use Laravel\Lumen\Testing\DatabaseMigrations;
 use TestCase;
 
 class AcceptanceTest extends TestCase
 {
+    use DatabaseMigrations;
+
     protected string $routeUrl = '/marmalade/';
 
     /**
